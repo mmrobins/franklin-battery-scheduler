@@ -1,10 +1,10 @@
 name: FranklinWH Battery Scheduler
 on:
   schedule:
-    - cron: '50 13 * * *'  # 6:50 AM PST (UTC-8)
-    - cron: '55 0 * * *'   # 4:55 PM PST (UTC-8)
-    - cron: '25 2 * * *'   # 7:07 PM PDT (UTC-7)
-    - cron: '0 6 * * *'    # 10:00 PM PST (UTC-8)
+    - cron: '50 12 * * *'  # 6:50 AM PDT (UTC-7)
+    - cron: '55 23 * * *'  # 4:55 PM PDT (UTC-7)
+    - cron: '34 2 * * *'   # 7:25 PM PDT (UTC-7)
+    - cron: '0 5 * * *'    # 10:00 PM PDT (UTC-7)
 
   workflow_dispatch:
     inputs:
@@ -28,7 +28,7 @@ jobs:
           echo '${{ toJson(github.event) }}'
 
       - name: Set morning SOC (65%)
-        if: github.event.schedule == '50 13 * * *'
+        if: github.event.schedule == '50 12 * * *'
         env:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
@@ -36,7 +36,7 @@ jobs:
         run: ./set_soc.sh 65
 
       - name: Set afternoon SOC (35%)
-        if: github.event.schedule == '55 0 * * *'
+        if: github.event.schedule == '55 23 * * *'
         env:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
@@ -44,7 +44,7 @@ jobs:
         run: ./set_soc.sh 35
 
       - name: Set 7:23PM SOC (22%)
-        if: github.event.schedule == '23 2 * * *'
+        if: github.event.schedule == '34 2 * * *'
         env:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
@@ -52,7 +52,7 @@ jobs:
         run: ./set_soc.sh 22
 
       - name: Set evening SOC (95%)
-        if: github.event.schedule == '0 6 * * *'
+        if: github.event.schedule == '0 5 * * *'
         env:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
