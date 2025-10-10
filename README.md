@@ -6,12 +6,6 @@ Automated scheduling for FranklinWH battery SOC (State of Charge) settings using
 
 This repository contains a bash script that sets your FranklinWH battery to self-consumption mode with configurable SOC thresholds. GitHub Actions automatically runs the script at scheduled times to optimize battery usage throughout the day.
 
-## Default Schedule
-
-- **6:50 AM PST**: Set to 65% SOC (morning mode)
-- **4:55 PM PST**: Set to 35% SOC (afternoon mode)  
-- **10:00 PM PST**: Set to 95% SOC (evening mode)
-
 ## Setup
 
 ### 1. Fork or Clone This Repository
@@ -33,7 +27,7 @@ The workflow is configured for PST (UTC-8). To adjust for your timezone, edit `.
 ```yaml
 # Example for EST (UTC-5):
 - cron: '50 11 * * *'  # 6:50 AM EST
-- cron: '55 22 * * *'  # 4:55 PM EST  
+- cron: '55 22 * * *'  # 4:55 PM EST
 - cron: '0 4 * * *'    # 10:00 PM EST
 ```
 
@@ -116,6 +110,16 @@ Test the script locally first to verify your credentials work:
 - Never commit credentials directly to the repository
 - All sensitive information is stored in GitHub Secrets
 - The script only reads environment variables, never logs them
+
+## FAQ
+
+### Why is this written in bash?
+
+Bash is lightweight, has no dependencies, and is natively supported in GitHub Actions runners.  It might not be pretty, but it gets the job done.
+
+### Is the FranklinWH API documented?
+
+Not that I know of.  I basically copied what was done in https://github.com/richo/franklinwh-python, but I always get annoyed setting up python depenencies, so I ported it to bash to be as easy to run as possible.
 
 ## License
 

@@ -52,10 +52,8 @@ echo "Setting self-consumption mode with ${SOC}% SOC..."
 # Set self-consumption mode with specified SOC
 RESPONSE=$(curl -s -X POST "$BASE_URL/tou/updateTouMode" \
     -H "loginToken: $TOKEN" \
-    -H "Content-Type: application/x-www-form-urlencoded" \
     -d "currendId=9323" \
     -d "gatewayId=$FRANKLIN_GATEWAY_ID" \
-    -d "lang=EN_US" \
     -d "oldIndex=1" \
     -d "soc=$SOC" \
     -d "stromEn=1" \
