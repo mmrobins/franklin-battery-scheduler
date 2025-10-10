@@ -6,8 +6,8 @@ on:
     - cron: '50 13 * * *'  # 6:50 AM PST (UTC-8)
     # 4:55 PM UTC (adjust for your timezone)
     - cron: '55 0 * * *'   # 4:55 PM PST (UTC-8)
-    # 6:55 PM UTC (adjust for your timezone)
-    - cron: '0 2 * * *'   # 6:55 PM PST (UTC-8)
+    # 7:07 PM PDT (adjust for your timezone)
+    - cron: '7 2 * * *'   # 7:07 PM PDT (UTC-7)
     # 10:00 PM UTC (adjust for your timezone)
     - cron: '0 6 * * *'    # 10:00 PM PST (UTC-8)
 
@@ -42,8 +42,8 @@ jobs:
           FRANKLIN_GATEWAY_ID: ${{ secrets.FRANKLIN_GATEWAY_ID }}
         run: ./set_soc.sh 35
 
-      - name: Set 6:55PM SOC (22%)
-        if: github.event.schedule == '0 2 * * *'
+      - name: Set 7:07PM SOC (22%)
+        if: github.event.schedule == '7 2 * * *'
         env:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
