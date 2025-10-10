@@ -1,17 +1,11 @@
 name: FranklinWH Battery Scheduler
-
 on:
   schedule:
-    # 6:50 AM UTC (adjust for your timezone)
     - cron: '50 13 * * *'  # 6:50 AM PST (UTC-8)
-    # 4:55 PM UTC (adjust for your timezone)
     - cron: '55 0 * * *'   # 4:55 PM PST (UTC-8)
-    # 7:07 PM PDT (adjust for your timezone)
-    - cron: '7 2 * * *'   # 7:07 PM PDT (UTC-7)
-    # 10:00 PM UTC (adjust for your timezone)
+    - cron: '25 2 * * *'   # 7:07 PM PDT (UTC-7)
     - cron: '0 6 * * *'    # 10:00 PM PST (UTC-8)
 
-  # Allow manual trigger
   workflow_dispatch:
     inputs:
       soc:
@@ -25,6 +19,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Debug schedule info
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Schedule: ${{ github.event.schedule }}"
+          echo "Full event context:"
+          echo '${{ toJson(github.event) }}'
 
       - name: Set morning SOC (65%)
         if: github.event.schedule == '50 13 * * *'
@@ -42,8 +43,8 @@ jobs:
           FRANKLIN_GATEWAY_ID: ${{ secrets.FRANKLIN_GATEWAY_ID }}
         run: ./set_soc.sh 35
 
-      - name: Set 7:07PM SOC (22%)
-        if: github.event.schedule == '7 2 * * *'
+      - name: Set 7:23PM SOC (22%)
+        if: github.event.schedule == '23 2 * * *'
         env:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
