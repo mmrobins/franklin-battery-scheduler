@@ -47,7 +47,28 @@ export FRANKLIN_GATEWAY_ID="your_gateway_id"
 
 # Run script with desired SOC
 ./set_soc.sh 75
+
+# Enable debug mode for troubleshooting
+DEBUG=true ./set_soc.sh 75
 ```
+
+### Debug Mode
+
+For troubleshooting, you can enable debug mode by setting `DEBUG=true`:
+
+```bash
+DEBUG=true ./set_soc.sh 65
+```
+
+Debug mode will show:
+- All bash commands being executed
+- Password hash generation
+- Exact curl commands being run
+- Full API responses
+- Token extraction process
+- Success/failure checks
+
+This helps diagnose authentication issues, network problems, or API errors.
 
 ### Manual GitHub Actions Trigger
 
@@ -62,6 +83,7 @@ The `set_soc.sh` script:
 - Sets the battery to self-consumption mode with the specified SOC threshold
 - Provides success/error feedback
 - Requires no Python dependencies (pure bash + curl + openssl)
+- Includes debug mode for troubleshooting (set `DEBUG=true`)
 
 ## Customization
 
