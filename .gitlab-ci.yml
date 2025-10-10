@@ -1,3 +1,4 @@
+---
 # GitLab CI for FranklinWH Battery Scheduler
 # PGE Time-of-Use pricing optimization
 # Off-peak 9PM-7AM (all day weekends) 9.08 cents/kWh
@@ -10,6 +11,8 @@ spec:
       description: "Target SOC percentage (0-100)"
       type: string
       default: "65"
+
+---
 
 stages:
   - battery-control
