@@ -4,77 +4,59 @@
 # Mid-Peak 7AM-5PM (weekdays only) 16.99 cents/kWh
 # Peak 5PM-9PM (weekdays only) 43.89 cents/kWh
 
+spec:
+  inputs:
+    soc_target:
+      description: "Target SOC percentage (0-100)"
+      type: string
+      default: "65"
+
 stages:
   - battery-control
 
 variables:
   # These should be set as CI/CD variables in GitLab project settings
   # FRANKLIN_EMAIL
-  # FRANKLIN_PASSWORD  
+  # FRANKLIN_PASSWORD
   # FRANKLIN_GATEWAY_ID
 
-.battery_job_template: &battery_job
+set_battery_soc:
   stage: battery-control
   image: ubuntu:latest
   before_script:
     - apt-get update && apt-get install -y curl openssl
     - chmod +x set_soc.sh
   script:
-    - ./set_soc.sh $SOC_TARGET
+    - ./set_soc.sh $[[ inputs.soc_target ]]
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $ENABLE_GITLAB_CI == "true"
-  tags:
-    - docker
-
-morning_mid_peak:
-  <<: *battery_job
-  variables:
-    SOC_TARGET: "65"
-  # Schedule: 6:50 AM Pacific Time (weekdays only)
-  # Set in GitLab UI: CI/CD > Schedules
-  # Cron: 50 6 * * 1-5
-  # Timezone: America/Los_Angeles
-
-peak_prep:
-  <<: *battery_job
-  variables:
-    SOC_TARGET: "95"
-  # Schedule: 4:00 PM Pacific Time (weekdays only)
-  # Set in GitLab UI: CI/CD > Schedules  
-  # Cron: 0 16 * * 1-5
-  # Timezone: America/Los_Angeles
-
-peak_drain:
-  <<: *battery_job
-  variables:
-    SOC_TARGET: "35"
-  # Schedule: 4:55 PM Pacific Time (weekdays only)
-  # Set in GitLab UI: CI/CD > Schedules
-  # Cron: 55 16 * * 1-5
-  # Timezone: America/Los_Angeles
-
-off_peak_recharge:
-  <<: *battery_job
-  variables:
-    SOC_TARGET: "95"
-  # Schedule: 9:10 PM Pacific Time (weekdays only)
-  # Set in GitLab UI: CI/CD > Schedules
-  # Cron: 10 21 * * 1-5
-  # Timezone: America/Los_Angeles
-
-# Manual trigger job
-manual_soc:
-  stage: battery-control
-  image: ubuntu:latest
-  before_script:
-    - apt-get update && apt-get install -y curl openssl
-    - chmod +x set_soc.sh
-  script:
-    - ./set_soc.sh ${SOC_VALUE:-65}
-  rules:
     - if: $CI_PIPELINE_SOURCE == "web" && $ENABLE_GITLAB_CI == "true"
       when: manual
-  variables:
-    SOC_VALUE: "65"
   tags:
     - docker
+
+# Schedules to create in GitLab UI (CI/CD > Schedules):
+# 
+# 1. Morning Mid-Peak (6:50 AM Pacific)
+#    - Description: "Morning Mid-Peak 65% SOC"
+#    - Cron: 50 6 * * 1-5
+#    - Timezone: America/Los_Angeles  
+#    - Input: soc_target = "65"
+#
+# 2. Peak Prep (4:00 PM Pacific)
+#    - Description: "Peak Prep 95% SOC"
+#    - Cron: 0 16 * * 1-5
+#    - Timezone: America/Los_Angeles
+#    - Input: soc_target = "95"
+#
+# 3. Peak Drain (4:55 PM Pacific) 
+#    - Description: "Peak Drain 35% SOC"
+#    - Cron: 55 16 * * 1-5
+#    - Timezone: America/Los_Angeles
+#    - Input: soc_target = "35"
+#
+# 4. Off-Peak Recharge (9:10 PM Pacific)
+#    - Description: "Off-Peak Recharge 95% SOC"
+#    - Cron: 10 21 * * 1-5
+#    - Timezone: America/Los_Angeles
+#    - Input: soc_target = "95"
