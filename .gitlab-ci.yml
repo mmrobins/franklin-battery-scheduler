@@ -1,0 +1,80 @@
+# GitLab CI for FranklinWH Battery Scheduler
+# PGE Time-of-Use pricing optimization
+# Off-peak 9PM-7AM (all day weekends) 9.08 cents/kWh
+# Mid-Peak 7AM-5PM (weekdays only) 16.99 cents/kWh
+# Peak 5PM-9PM (weekdays only) 43.89 cents/kWh
+
+stages:
+  - battery-control
+
+variables:
+  # These should be set as CI/CD variables in GitLab project settings
+  # FRANKLIN_EMAIL
+  # FRANKLIN_PASSWORD  
+  # FRANKLIN_GATEWAY_ID
+
+.battery_job_template: &battery_job
+  stage: battery-control
+  image: ubuntu:latest
+  before_script:
+    - apt-get update && apt-get install -y curl openssl
+    - chmod +x set_soc.sh
+  script:
+    - ./set_soc.sh $SOC_TARGET
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $ENABLE_GITLAB_CI == "true"
+  tags:
+    - docker
+
+morning_mid_peak:
+  <<: *battery_job
+  variables:
+    SOC_TARGET: "65"
+  # Schedule: 6:50 AM Pacific Time (weekdays only)
+  # Set in GitLab UI: CI/CD > Schedules
+  # Cron: 50 6 * * 1-5
+  # Timezone: America/Los_Angeles
+
+peak_prep:
+  <<: *battery_job
+  variables:
+    SOC_TARGET: "95"
+  # Schedule: 4:00 PM Pacific Time (weekdays only)
+  # Set in GitLab UI: CI/CD > Schedules  
+  # Cron: 0 16 * * 1-5
+  # Timezone: America/Los_Angeles
+
+peak_drain:
+  <<: *battery_job
+  variables:
+    SOC_TARGET: "35"
+  # Schedule: 4:55 PM Pacific Time (weekdays only)
+  # Set in GitLab UI: CI/CD > Schedules
+  # Cron: 55 16 * * 1-5
+  # Timezone: America/Los_Angeles
+
+off_peak_recharge:
+  <<: *battery_job
+  variables:
+    SOC_TARGET: "95"
+  # Schedule: 9:10 PM Pacific Time (weekdays only)
+  # Set in GitLab UI: CI/CD > Schedules
+  # Cron: 10 21 * * 1-5
+  # Timezone: America/Los_Angeles
+
+# Manual trigger job
+manual_soc:
+  stage: battery-control
+  image: ubuntu:latest
+  before_script:
+    - apt-get update && apt-get install -y curl openssl
+    - chmod +x set_soc.sh
+  script:
+    - ./set_soc.sh ${SOC_VALUE:-65}
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $ENABLE_GITLAB_CI == "true"
+      when: manual
+  variables:
+    SOC_VALUE: "65"
+  tags:
+    - docker

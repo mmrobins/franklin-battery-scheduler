@@ -20,6 +20,10 @@ In your GitHub repository, go to **Settings → Secrets and variables → Action
 - `FRANKLIN_PASSWORD`: Your FranklinWH account password
 - `FRANKLIN_GATEWAY_ID`: Your gateway ID (found in FranklinWH app under More → Site Address)
 
+Then go to **Settings → Secrets and variables → Actions → Variables** and add:
+
+- `ENABLE_GITHUB_ACTIONS`: Set to `true` to enable GitHub Actions scheduling
+
 ### 3. Adjust Timezone (Optional)
 
 The workflow is configured for PST (UTC-8). To adjust for your timezone, edit `.github/workflows/battery-schedule.yml` and modify the cron expressions:

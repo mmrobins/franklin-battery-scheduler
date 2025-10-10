@@ -20,6 +20,7 @@ on:
 jobs:
   set-battery-soc:
     runs-on: ubuntu-latest
+    if: vars.ENABLE_GITHUB_ACTIONS == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
