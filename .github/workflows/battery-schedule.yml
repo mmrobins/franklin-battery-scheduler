@@ -4,7 +4,7 @@ on:
     - cron: '50 12 * * *'  # 6:50 AM PDT (UTC-7)
     - cron: '55 23 * * *'  # 4:55 PM PDT (UTC-7)
     - cron: '34 2 * * *'   # 7:25 PM PDT (UTC-7)
-    - cron: '0 5 * * *'    # 10:00 PM PDT (UTC-7)
+    - cron: '5 4 * * *'    # 9:05 PM PDT (UTC-7)
 
   workflow_dispatch:
     inputs:
@@ -52,7 +52,7 @@ jobs:
         run: ./set_soc.sh 22
 
       - name: Set evening SOC (95%)
-        if: github.event.schedule == '0 5 * * *'
+        if: github.event.schedule == '5 4 * * *'
         env:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
