@@ -36,7 +36,6 @@ set_battery_soc:
     - if: $CI_PIPELINE_SOURCE == "web" && $ENABLE_GITLAB_CI == "true"
       when: manual
   tags:
-    - docker
 
 # Schedules to create in GitLab UI (CI/CD > Schedules):
 # 
