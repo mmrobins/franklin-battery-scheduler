@@ -14,14 +14,13 @@ Fork this repository to your GitHub account or clone it locally.
 
 ### 2. Configure GitHub Secrets
 
-In your GitHub repository, go to **Settings → Secrets and variables → Actions** and add these repository secrets:
+In your GitHub repository, go to [**Settings → Secrets and variables →
+Actions**](https://github.com/yourusername/franklin-battery-scheduler/settings/secrets/actions)
+and add these repository secrets:
 
 - `FRANKLIN_EMAIL`: Your FranklinWH account email
 - `FRANKLIN_PASSWORD`: Your FranklinWH account password
 - `FRANKLIN_GATEWAY_ID`: Your gateway ID (found in FranklinWH app under More → Site Address)
-
-Then go to **Settings → Secrets and variables → Actions → Variables** and add:
-
 - `ENABLE_GITHUB_ACTIONS`: Set to `true` to enable GitHub Actions scheduling
 
 ### 3. Adjust Timezone (Optional)
