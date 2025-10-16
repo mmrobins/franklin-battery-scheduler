@@ -22,6 +22,7 @@ variables:
   # FRANKLIN_EMAIL
   # FRANKLIN_PASSWORD
   # FRANKLIN_GATEWAY_ID
+  # ENABLE_GITLAB_CI
 
 set_battery_soc:
   stage: battery-control
@@ -33,32 +34,6 @@ set_battery_soc:
     - ./set_soc.sh $[[ inputs.soc_target ]]
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $ENABLE_GITLAB_CI == "true"
-    - if: $CI_PIPELINE_SOURCE == "web" && $ENABLE_GITLAB_CI == "true"
+    - if: $CI_PIPELINE_SOURCE == "web"
       when: manual
   tags:
-
-# Schedules to create in GitLab UI (CI/CD > Schedules):
-# 
-# 1. Morning Mid-Peak (6:50 AM Pacific)
-#    - Description: "Morning Mid-Peak 65% SOC"
-#    - Cron: 50 6 * * 1-5
-#    - Timezone: America/Los_Angeles  
-#    - Input: soc_target = "65"
-#
-# 2. Peak Prep (4:00 PM Pacific)
-#    - Description: "Peak Prep 95% SOC"
-#    - Cron: 0 16 * * 1-5
-#    - Timezone: America/Los_Angeles
-#    - Input: soc_target = "95"
-#
-# 3. Peak Drain (4:55 PM Pacific) 
-#    - Description: "Peak Drain 35% SOC"
-#    - Cron: 55 16 * * 1-5
-#    - Timezone: America/Los_Angeles
-#    - Input: soc_target = "35"
-#
-# 4. Off-Peak Recharge (9:10 PM Pacific)
-#    - Description: "Off-Peak Recharge 95% SOC"
-#    - Cron: 10 21 * * 1-5
-#    - Timezone: America/Los_Angeles
-#    - Input: soc_target = "95"
