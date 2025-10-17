@@ -2,6 +2,12 @@
 
 Automated scheduling for FranklinWH battery SOC (State of Charge) settings
 
+The FranklinWH mobile app gives you some control over some of your battery's
+settings with the TOU (Time of Use) mode, but not control over what the SOC
+targets are for each period.  I'd like to let the battery discharge more during
+peak times, and recharge more during off-peak times, so I wrote this script to
+make it easy to set the SOC targets on a schedule.
+
 ## Overview
 
 This repository contains a bash script that sets your FranklinWH battery to self-consumption mode with configurable SOC thresholds
@@ -36,6 +42,10 @@ export FRANKLIN_GATEWAY_ID="your_gateway_id"
 
 # Run script with desired SOC
 ./set_soc.sh 75
+
+# And optionally specify the mode, defaults to 'self'
+# Modes: tou (Time of Use), self (Self Consumption), backup (Emergency Backup)
+./set_soc.sh 75 tou
 
 # Enable debug mode for troubleshooting
 DEBUG=true ./set_soc.sh 75

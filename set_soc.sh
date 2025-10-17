@@ -6,13 +6,13 @@ if [ "$DEBUG" = "true" ]; then
 fi
 
 # Parse arguments
-DEFAULT_MODE="9323" # Self Consumption
+DEFAULT_MODE="self" # Self Consumption
 MODE_ID="$DEFAULT_MODE"
 
 if [ $# -eq 0 ]; then
-    echo "Usage: $0 <soc_percentage> [mode_id]"
+    echo "Usage: $0 <soc_percentage> [mode_name]"
     echo "Example: $0 65"
-    echo "Example: $0 80 9322 (for Time of Use)"
+    echo "Example: $0 80 tou (for Time of Use)"
     exit 1
 elif [ $# -eq 1 ]; then
     SOC=$1
@@ -27,23 +27,23 @@ fi
 
 # Validate MODE_ID and set currendId and workMode
 case "$MODE_ID" in
-    "9322") # Time of Use
+    "tou") # Time of Use
         CURREND_ID="9322"
         WORK_MODE="1"
         MODE_NAME="Time of Use"
         ;;
-    "9323") # Self Consumption
+    "self") # Self Consumption
         CURREND_ID="9323"
         WORK_MODE="2"
         MODE_NAME="Self Consumption"
         ;;
-    "9324") # Emergency Backup
+    "backup") # Emergency Backup
         CURREND_ID="9324"
         WORK_MODE="3"
         MODE_NAME="Emergency Backup"
         ;;
     *)
-        echo "Error: Invalid mode_id. Allowed values are 9322 (TOU), 9323 (Self Consumption), 9324 (Emergency Backup)."
+        echo "Error: Invalid mode_id. Allowed values are 'tou', 'self', or 'backup'."
         exit 1
         ;;
 esac
