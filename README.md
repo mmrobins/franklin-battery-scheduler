@@ -12,7 +12,9 @@ make it easy to set the SOC targets on a schedule.
 
 ## Overview
 
-This repository contains a bash script that sets your FranklinWH battery to self-consumption mode with configurable SOC thresholds
+This repository's main feature is a bash script that sets your FranklinWH
+battery to configurable SOC thresholds, and different modes (TOU, Self
+Consumption, Backup)
 
 The script itself can easily be [run manually](#Local-Script-Execution)
 
@@ -23,6 +25,8 @@ public CI/CD services are documented below
 
 * [Github Actions](#github-actions)
 * [GitLab CI](#gitlab-ci)
+* AWS lambda (not documented yet)
+* More options welcome - please open an issue or PR if you have another suggestion
 
 ## Where to Find Your Gateway ID
 
