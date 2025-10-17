@@ -16,6 +16,14 @@ public CI/CD services are documented below
 * [Github Actions](#github-actions)
 * [GitLab CI](#gitlab-ci)
 
+## Where to Find Your Gateway ID
+
+In your [FranklinWH mobile app](https://www.franklinwh.com/support/articles/detail/how-can-i-download-the-franklinwh-app) go to:
+
+* **Settings**
+* ** Device Info **
+* Copy the text after `SN:` - this is your Gateway ID
+
 ## Manual Usage
 
 ### Local Script Execution
