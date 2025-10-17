@@ -54,7 +54,9 @@ paths:
                   example: user@example.com
                 password:
                   type: string
-                  description: MD5 hash of user password (lowercase hex)
+                  description: |
+                    MD5 hash of user password (lowercase hex).
+                    Can be generated using `echo -n "your_password" | openssl md5 | cut -d' ' -f2`.
                   example: 5f4dcc3b5aa765d61d8327deb882cf99
                 lang:
                   type: string
@@ -102,9 +104,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                code: 401
-                message: Invalid username or password
 
   /hes-gateway/terminal/sendMqtt:
     post:
@@ -203,6 +202,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: Invalid username or password
+
+
 
   /hes-gateway/terminal/tou/updateTouMode:
     post:
@@ -464,9 +468,11 @@ components:
           example: "12345678"
           pattern: '^[0-9A-F]{8}$'
         dataArea:
-          type: string
-          description: JSON-encoded command data (compact format, no spaces)
-          example: '{"opt":1,"refreshData":1}'
+          type: object
+          description: JSON object containing command data.
+          example:
+            opt: 1
+            refreshData: 1
 
     SystemStatus:
       type: object
