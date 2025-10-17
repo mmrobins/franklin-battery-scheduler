@@ -1,0 +1,665 @@
+openapi: 3.0.3
+info:
+  title: FranklinWH Energy API
+  description: |
+    API for interacting with FranklinWH home energy storage systems.
+
+    This API allows you to monitor and control your FranklinWH battery system, including:
+    - Authentication and token management
+    - Reading real-time power statistics
+    - Controlling smart switch circuits
+    - Managing operating modes (Time of Use, Self Consumption, Emergency Backup)
+    - Retrieving energy totals
+
+    ## Authentication
+    All endpoints (except login) require a `loginToken` header obtained from the login endpoint.
+    Tokens expire after a period of time and will return a 401 error, requiring re-authentication.
+
+  version: 1.0.0
+  contact:
+    name: FranklinWH
+    url: https://www.franklinwh.com
+
+servers:
+  - url: https://energy.franklinwh.com
+    description: Production FranklinWH Energy API
+
+security:
+  - bearerAuth: []
+
+paths:
+  /hes-gateway/terminal/initialize/appUserOrInstallerLogin:
+    post:
+      summary: User Login
+      description: |
+        Authenticate with FranklinWH and receive an access token.
+        The password should be MD5 hashed before sending.
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - account
+                - password
+                - lang
+                - type
+              properties:
+                account:
+                  type: string
+                  description: User account/email
+                  example: user@example.com
+                password:
+                  type: string
+                  description: MD5 hash of user password (lowercase hex)
+                  example: 5f4dcc3b5aa765d61d8327deb882cf99
+                lang:
+                  type: string
+                  description: Language preference
+                  example: en_US
+                  default: en_US
+                type:
+                  type: integer
+                  description: Login type (1 for app user)
+                  example: 1
+                  default: 1
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Success
+                  result:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: Authentication token for subsequent requests
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          description: Account locked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: Account is locked
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: Invalid username or password
+
+  /hes-gateway/terminal/sendMqtt:
+    post:
+      summary: Send MQTT Command
+      description: |
+        Generic endpoint for sending MQTT-style commands to the gateway.
+        This is used internally for various operations including status queries and control commands.
+
+        The payload must include a CRC checksum and timestamp for validation.
+      operationId: sendMqtt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MqttPayload'
+            examples:
+              statusQuery:
+                summary: Query system status (cmdType 203)
+                value:
+                  lang: EN_US
+                  cmdType: 203
+                  equipNo: ABC123456
+                  type: 0
+                  timeStamp: 1697564321
+                  snno: 1
+                  len: 25
+                  crc: "12345678"
+                  dataArea: "{\"opt\":1,\"refreshData\":1}"
+              switchStatus:
+                summary: Query switch status (cmdType 311)
+                value:
+                  lang: EN_US
+                  cmdType: 311
+                  equipNo: ABC123456
+                  type: 0
+                  timeStamp: 1697564321
+                  snno: 2
+                  len: 32
+                  crc: "87654321"
+                  dataArea: "{\"opt\":0,\"order\":\"ABC123456\"}"
+              switchUsage:
+                summary: Query switch usage (cmdType 353)
+                value:
+                  lang: EN_US
+                  cmdType: 353
+                  equipNo: ABC123456
+                  type: 0
+                  timeStamp: 1697564321
+                  snno: 3
+                  len: 32
+                  crc: "ABCDEF12"
+                  dataArea: "{\"opt\":0,\"order\":\"ABC123456\"}"
+      responses:
+        '200':
+          description: Command executed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Success
+                  result:
+                    type: object
+                    properties:
+                      dataArea:
+                        type: string
+                        description: JSON-encoded response data (needs to be parsed)
+                        example: '{"p_sun":1500,"p_load":2000,"soc":85}'
+        '102':
+          description: Device timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 102
+                message: Device timeout
+        '136':
+          description: Gateway offline
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 136
+                message: Gateway is offline
+        '401':
+          description: Token expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /hes-gateway/terminal/tou/updateTouMode:
+    post:
+      summary: Update Operating Mode
+      description: |
+        Change the operating mode of the FranklinWH system.
+
+        Available modes:
+        - **Time of Use (1)**: Optimize based on time-of-use electricity rates
+        - **Self Consumption (2)**: Maximize self-consumption of solar energy
+        - **Emergency Backup (3)**: Maintain battery charge for backup power
+      operationId: updateMode
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - currendId
+                - gatewayId
+                - lang
+                - soc
+                - stromEn
+                - workMode
+              properties:
+                currendId:
+                  type: string
+                  description: Current mode ID (9322=TOU, 9323=Self, 9324=Backup)
+                  example: "9322"
+                  enum:
+                    - "9322"
+                    - "9323"
+                    - "9324"
+                gatewayId:
+                  type: string
+                  description: Gateway serial number
+                  example: ABC123456
+                lang:
+                  type: string
+                  example: EN_US
+                  default: EN_US
+                oldIndex:
+                  type: string
+                  description: Previous mode index (purpose unclear)
+                  example: "1"
+                soc:
+                  type: string
+                  description: State of charge threshold percentage (0-100)
+                  example: "20"
+                stromEn:
+                  type: string
+                  description: Enable flag (always "1")
+                  example: "1"
+                  default: "1"
+                workMode:
+                  type: string
+                  description: Work mode number (1=TOU, 2=Self, 3=Backup)
+                  example: "1"
+                  enum:
+                    - "1"
+                    - "2"
+                    - "3"
+            examples:
+              timeOfUse:
+                summary: Time of Use mode with 20% minimum SOC
+                value:
+                  currendId: "9322"
+                  gatewayId: ABC123456
+                  lang: EN_US
+                  oldIndex: "1"
+                  soc: "20"
+                  stromEn: "1"
+                  workMode: "1"
+              selfConsumption:
+                summary: Self Consumption mode
+                value:
+                  currendId: "9323"
+                  gatewayId: ABC123456
+                  lang: EN_US
+                  oldIndex: "2"
+                  soc: "20"
+                  stromEn: "1"
+                  workMode: "2"
+              emergencyBackup:
+                summary: Emergency Backup mode with 100% SOC
+                value:
+                  currendId: "9324"
+                  gatewayId: ABC123456
+                  lang: EN_US
+                  oldIndex: "3"
+                  soc: "100"
+                  stromEn: "1"
+                  workMode: "3"
+      responses:
+        '200':
+          description: Mode updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: Token expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /hes-gateway/terminal/selectTerGatewayControlLoadByGatewayId:
+    get:
+      summary: Get Controllable Loads
+      description: |
+        Retrieve information about controllable loads connected to the gateway.
+        Note: This endpoint's functionality is not fully documented.
+      operationId: getControllableLoads
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gateway ID
+          example: ABC123456
+        - name: lang
+          in: query
+          required: true
+          schema:
+            type: string
+            default: en_US
+          example: en_US
+      responses:
+        '200':
+          description: List of controllable loads
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /hes-gateway/terminal/getIotAccessoryList:
+    get:
+      summary: Get IoT Accessory List
+      description: |
+        Retrieve list of IoT accessories connected to the gateway.
+        Note: This endpoint's functionality is not fully documented.
+      operationId: getAccessoryList
+      parameters:
+        - name: gatewayId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gateway ID
+          example: ABC123456
+        - name: lang
+          in: query
+          required: true
+          schema:
+            type: string
+            default: en_US
+          example: en_US
+      responses:
+        '200':
+          description: List of IoT accessories
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /hes-gateway/manage/getEquipmentList:
+    get:
+      summary: Get Equipment List
+      description: |
+        Retrieve list of equipment associated with the gateway.
+        Note: This endpoint's functionality is not fully documented.
+      operationId: getEquipmentList
+      parameters:
+        - name: gatewayId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gateway ID
+          example: ABC123456
+        - name: lang
+          in: query
+          required: true
+          schema:
+            type: string
+            default: en_US
+          example: en_US
+      responses:
+        '200':
+          description: List of equipment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: apiKey
+      in: header
+      name: loginToken
+      description: Token obtained from the login endpoint
+
+  schemas:
+    MqttPayload:
+      type: object
+      required:
+        - lang
+        - cmdType
+        - equipNo
+        - type
+        - timeStamp
+        - snno
+        - len
+        - crc
+        - dataArea
+      properties:
+        lang:
+          type: string
+          description: Language code
+          example: EN_US
+          default: EN_US
+        cmdType:
+          type: integer
+          description: |
+            Command type:
+            - 203: System status query
+            - 311: Smart switch status/control
+            - 353: Smart switch usage query
+          example: 203
+          enum: [203, 311, 353]
+        equipNo:
+          type: string
+          description: Equipment/Gateway serial number
+          example: ABC123456
+        type:
+          type: integer
+          description: Message type (typically 0)
+          example: 0
+          default: 0
+        timeStamp:
+          type: integer
+          description: Unix timestamp (seconds since epoch)
+          example: 1697564321
+        snno:
+          type: integer
+          description: Sequence number (increments with each request)
+          example: 1
+        len:
+          type: integer
+          description: Length of dataArea JSON string in bytes
+          example: 25
+        crc:
+          type: string
+          description: CRC32 checksum of dataArea as 8-character uppercase hex
+          example: "12345678"
+          pattern: '^[0-9A-F]{8}$'
+        dataArea:
+          type: string
+          description: JSON-encoded command data (compact format, no spaces)
+          example: '{"opt":1,"refreshData":1}'
+
+    SystemStatus:
+      type: object
+      description: Real-time system status returned by cmdType 203
+      properties:
+        p_sun:
+          type: number
+          description: Solar production power (W)
+          example: 1500.0
+        p_gen:
+          type: number
+          description: Generator production power (W)
+          example: 0.0
+        p_fhp:
+          type: number
+          description: Battery charge/discharge power (W, negative = charging)
+          example: -500.0
+        p_uti:
+          type: number
+          description: Grid import/export power (W, negative = exporting)
+          example: 100.0
+        p_load:
+          type: number
+          description: Home load power (W)
+          example: 2000.0
+        soc:
+          type: number
+          description: Battery state of charge (%)
+          example: 85.0
+        kwh_fhp_chg:
+          type: number
+          description: Battery charge today (kWh)
+          example: 12.5
+        kwh_fhp_di:
+          type: number
+          description: Battery discharge today (kWh)
+          example: 10.3
+        kwh_uti_in:
+          type: number
+          description: Grid import today (kWh)
+          example: 5.2
+        kwh_uti_out:
+          type: number
+          description: Grid export today (kWh)
+          example: 3.1
+        kwh_sun:
+          type: number
+          description: Solar generation today (kWh)
+          example: 18.7
+        kwh_gen:
+          type: number
+          description: Generator production today (kWh)
+          example: 0.0
+        kwh_load:
+          type: number
+          description: Home consumption today (kWh)
+          example: 25.4
+        pro_load:
+          type: array
+          description: Smart switch states (1=on, 0=off)
+          items:
+            type: integer
+            enum: [0, 1]
+          example: [1, 0, 1]
+
+    SwitchStatus:
+      type: object
+      description: Smart switch status returned by cmdType 311
+      properties:
+        Sw1Mode:
+          type: integer
+          description: Switch 1 mode (0=off, 1=on)
+          enum: [0, 1]
+        Sw1ProLoad:
+          type: integer
+          description: Switch 1 protected load flag
+          enum: [0, 1]
+        Sw1MsgType:
+          type: integer
+          description: Switch 1 message type
+        Sw2Mode:
+          type: integer
+          description: Switch 2 mode (0=off, 1=on)
+          enum: [0, 1]
+        Sw2ProLoad:
+          type: integer
+          description: Switch 2 protected load flag
+          enum: [0, 1]
+        Sw2MsgType:
+          type: integer
+          description: Switch 2 message type
+        Sw3Mode:
+          type: integer
+          description: Switch 3 mode (0=off, 1=on)
+          enum: [0, 1]
+        Sw3ProLoad:
+          type: integer
+          description: Switch 3 protected load flag
+          enum: [0, 1]
+        Sw3MsgType:
+          type: integer
+          description: Switch 3 message type
+        SwMerge:
+          type: integer
+          description: Whether switches 1 and 2 are merged (1=merged)
+          enum: [0, 1]
+        runingMode:
+          type: integer
+          description: Current running mode (9322=TOU, 9323=Self, 9324=Backup)
+          enum: [9322, 9323, 9324]
+        touMinSoc:
+          type: integer
+          description: Minimum SOC for Time of Use mode (%)
+          example: 20
+        selfMinSoc:
+          type: integer
+          description: Minimum SOC for Self Consumption mode (%)
+          example: 20
+        backupMaxSoc:
+          type: integer
+          description: Maximum SOC for Emergency Backup mode (%)
+          example: 100
+        modeChoose:
+          type: integer
+          description: Mode selection indicator
+        result:
+          type: integer
+          description: Result code
+
+    SwitchUsage:
+      type: object
+      description: Smart switch usage data returned by cmdType 353
+      properties:
+        SW1ExpPower:
+          type: number
+          description: Switch 1 current power (W)
+          example: 150.5
+        SW1ExpEnergy:
+          type: number
+          description: Switch 1 energy today (kWh)
+          example: 2.3
+        SW2ExpPower:
+          type: number
+          description: Switch 2 current power (W)
+          example: 0.0
+        SW2ExpEnergy:
+          type: number
+          description: Switch 2 energy today (kWh)
+          example: 0.0
+        CarSWPower:
+          type: number
+          description: V2L (vehicle to load) current power (W)
+          example: 0.0
+        CarSWExpEnergy:
+          type: number
+          description: V2L export energy today (kWh)
+          example: 0.0
+        CarSWImpEnergy:
+          type: number
+          description: V2L import energy today (kWh)
+          example: 0.0
+
+    SuccessResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Success
+        result:
+          type: object
+          description: Response data (structure varies by endpoint)
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Error code
+          example: 401
+        message:
+          type: string
+          description: Error message
+          example: Token expired
+
+tags:
+  - name: Authentication
+    description: Login and token management
+  - name: Monitoring
+    description: Read system status and statistics
+  - name: Control
+    description: Control system modes and switches
+  - name: Configuration
+    description: Retrieve system configuration
