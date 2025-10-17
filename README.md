@@ -2,6 +2,8 @@
 
 Automated scheduling for FranklinWH battery SOC (State of Charge) settings
 
+⚠️  ** This project is unofficial and not affiliated with FranklinWH ** ⚠️
+
 The FranklinWH mobile app gives you some control over some of your battery's
 settings with the TOU (Time of Use) mode, but not control over what the SOC
 targets are for each period.  I'd like to let the battery discharge more during
@@ -50,6 +52,34 @@ export FRANKLIN_GATEWAY_ID="your_gateway_id"
 # Enable debug mode for troubleshooting
 DEBUG=true ./set_soc.sh 75
 ```
+
+### Getting an Authentication Token
+
+This can be useful for debugging or testing API calls directly.  You can get it by setting the same env vars as in [local script execution](#local-script-execution) and running:
+
+```bash
+./get_auth_token.sh
+->
+APP_ACCOUNT::eyJ0eXAi_big_long_string_of_characters
+```
+
+### API Documentation
+
+You can view the FranklinWH Energy API documentation in an interactive Swagger
+UI by clicking the link below.  Note, this is NOT official documentation, just
+what I've reverse-engineered from various sources.
+
+[View API Documentation in Swagger UI](https://editor.swagger.io/?url=https://raw.githubusercontent.com/mmrobins/franklin-battery-scheduler/main/docs/openapi.yaml)
+
+You can interactively test the API endpoints that this repo is hitting from the
+Swagger UI.  The main things you'll need are an [authentication
+token](#getting-an-authentication-token) and your [Gateway
+ID](#where-to-find-your-gateway-id)
+
+You can click the "Authorize" button in the Swagger UI and paste in the token,
+and then you'll be able to test the other endpoints, most of which will require
+your Gateway ID.
+
 
 ### Debug Mode
 

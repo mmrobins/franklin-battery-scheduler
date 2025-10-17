@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# useful for just getting a token to use in other scripts or manual curl calls
+
 # Enable debug mode if DEBUG=true
 if [ "$DEBUG" = "true" ]; then
     echo "DEBUG: Debug mode enabled"
