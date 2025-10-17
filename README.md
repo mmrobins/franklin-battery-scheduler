@@ -141,8 +141,7 @@ glab schedule create --cron "10 21 * * 1-5" --description "off-peak recharge 95%
 
 ### Why is this written in bash?
 
-Bash is lightweight, has no dependencies, and is natively supported in GitHub
-Actions runners.  It might not be pretty, but it gets the job done.
+Bash is lightweight, has no dependencies, and is natively supported just about everywhere you might wanna run this.  It might not be pretty, but it gets the job done.
 
 ### Is the FranklinWH API documented?
 
