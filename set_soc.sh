@@ -5,14 +5,48 @@ if [ "$DEBUG" = "true" ]; then
     echo "DEBUG: Debug mode enabled"
 fi
 
-# Check if SOC argument is provided
+# Parse arguments
+DEFAULT_MODE="9323" # Self Consumption
+MODE_ID="$DEFAULT_MODE"
+
 if [ $# -eq 0 ]; then
-    echo "Usage: $0 <soc_percentage>"
+    echo "Usage: $0 <soc_percentage> [mode_id]"
     echo "Example: $0 65"
+    echo "Example: $0 80 9322 (for Time of Use)"
+    exit 1
+elif [ $# -eq 1 ]; then
+    SOC=$1
+elif [ $# -eq 2 ]; then
+    SOC=$1
+    MODE_ID=$2
+else
+    echo "Error: Too many arguments."
+    echo "Usage: $0 <soc_percentage> [mode_id]"
     exit 1
 fi
 
-SOC=$1
+# Validate MODE_ID and set currendId and workMode
+case "$MODE_ID" in
+    "9322") # Time of Use
+        CURREND_ID="9322"
+        WORK_MODE="1"
+        MODE_NAME="Time of Use"
+        ;;
+    "9323") # Self Consumption
+        CURREND_ID="9323"
+        WORK_MODE="2"
+        MODE_NAME="Self Consumption"
+        ;;
+    "9324") # Emergency Backup
+        CURREND_ID="9324"
+        WORK_MODE="3"
+        MODE_NAME="Emergency Backup"
+        ;;
+    *)
+        echo "Error: Invalid mode_id. Allowed values are 9322 (TOU), 9323 (Self Consumption), 9324 (Emergency Backup)."
+        exit 1
+        ;;
+esac
 
 # Validate SOC is a number between 0 and 100
 if ! [[ "$SOC" =~ ^[0-9]+$ ]] || [ "$SOC" -lt 0 ] || [ "$SOC" -gt 100 ]; then
@@ -67,7 +101,7 @@ if [ -z "$TOKEN" ]; then
     exit 1
 fi
 
-echo "Setting self-consumption mode with ${SOC}% SOC..."
+echo "Setting ${MODE_NAME} mode with ${SOC}% SOC..."
 
 # Set self-consumption mode with specified SOC
 if [ "$DEBUG" = "true" ]; then
@@ -76,7 +110,7 @@ if [ "$DEBUG" = "true" ]; then
     echo "DEBUG: SOC: $SOC"
 fi
 
-SOC_CMD="curl -s -X POST \"$BASE_URL/tou/updateTouMode\" -H \"loginToken: $TOKEN\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"currendId=9323\" -d \"gatewayId=$FRANKLIN_GATEWAY_ID\" -d \"lang=EN_US\" -d \"oldIndex=1\" -d \"soc=$SOC\" -d \"stromEn=1\" -d \"workMode=2\""
+SOC_CMD="curl -s -X POST \"$BASE_URL/tou/updateTouMode\" -H \"loginToken: $TOKEN\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"currendId=$CURREND_ID\" -d \"gatewayId=$FRANKLIN_GATEWAY_ID\" -d \"lang=EN_US\" -d \"oldIndex=1\" -d \"soc=$SOC\" -d \"stromEn=1\" -d \"workMode=$WORK_MODE\""
 
 if [ "$DEBUG" = "true" ]; then
     echo "DEBUG: Running SOC update command:"
@@ -97,9 +131,9 @@ if [ "$DEBUG" = "true" ]; then
 fi
 
 if [ "$SUCCESS" = "success" ]; then
-    echo "✓ Successfully set self-consumption mode with ${SOC}% SOC"
+    echo "✓ Successfully set ${MODE_NAME} mode with ${SOC}% SOC"
 else
-    echo "✗ Failed to set mode. Response:"
+    echo "✗ Failed to set ${MODE_NAME} mode. Response:"
     echo "$RESPONSE"
     exit 1
 fi
