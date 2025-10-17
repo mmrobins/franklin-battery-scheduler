@@ -8,103 +8,13 @@ This repository contains a bash script that sets your FranklinWH battery to self
 
 The script itself can easily be [run manually](#Local-Script-Execution)
 
-There are many ways this can be run on a schedule, there's some setup and documentation for some common ones
+There's lots of ways to automate running this script on a schedule.  One simple
+way is to use cron jobs on a local machine or server, but this requires the
+machine to be always on and connected to the internet, so a couple different
+public CI/CD services are documented below
 
-* Github Actions
-* GitLab CI
-
-## Setup
-
-### 1. Fork or Clone This Repository
-
-Fork this repository to your GitHub account or clone it locally.
-
-### 2. Configure CI Secrets
-
-Depending on your CI/CD provider, you will need to configure secrets.
-
-#### GitHub Actions
-
-In your GitHub repository, go to [**Settings → Secrets and variables →
-Actions**](https://github.com/yourusername/franklin-battery-scheduler/settings/secrets/actions)
-and add these repository secrets:
-
-- `FRANKLIN_EMAIL`: Your FranklinWH account email
-- `FRANKLIN_PASSWORD`: Your FranklinWH account password
-- `FRANKLIN_GATEWAY_ID`: Your gateway ID (found in FranklinWH app under More → Site Address)
-- `ENABLE_GITHUB_ACTIONS`: Set to `true` to enable GitHub Actions scheduling
-
-#### GitLab CI
-
-Go to your [GitLab project → **Settings → CI/CD → Variables**](https://gitlab.com/mmrobins/franklin-battery-scheduler/-/settings/ci_cd#js-cicd-variables-settings) and add:
-
-- `FRANKLIN_EMAIL`: Your FranklinWH account email
-- `FRANKLIN_PASSWORD`: Your FranklinWH account password (mark as **Masked**)
-- `FRANKLIN_GATEWAY_ID`: Your gateway ID from the FranklinWH app
-- `ENABLE_GITLAB_CI`: Set to `true` to enable GitLab CI scheduling
-
-### 3. Adjust Timezone (Optional)
-
-The workflow is configured for PST (UTC-8). To adjust for your timezone, edit `.github/workflows/battery-schedule.yml` and modify the cron expressions:
-
-```yaml
-# Example for EST (UTC-5):
-- cron: '50 11 * * *'  # 6:50 AM EST
-- cron: '55 22 * * *'  # 4:55 PM EST
-- cron: '0 4 * * *'    # 10:00 PM EST
-```
-
-### 4. Enable CI
-
-- **GitHub Actions**: GitHub Actions should be automatically enabled. The workflow will run according to the schedule once you push the repository.
-- **GitLab CI**: See the [GitLab CI Setup](#gitlab-ci-setup-for-franklinwh-battery-scheduler) section for detailed instructions on setting up pipeline schedules.
-
-
-## GitLab CI Setup for FranklinWH Battery Scheduler
-
-GitLab CI provides better timezone support for scheduled pipelines compared to GitHub Actions.
-
-### 1. Create GitLab Repository
-
-1. Go to [GitLab.com](https://gitlab.com) and create a new project
-2. Push your code to the GitLab repository:
-   ```bash
-   git remote add gitlab https://gitlab.com/yourusername/franklin-battery-scheduler.git
-   git push gitlab main
-   ```
-
-### 2. Set Up Pipeline Schedules
-
-You can create the schedules manually in the GitLab UI, or you can use the `glab` command-line tool.
-
-#### Using `glab`
-
-```bash
-glab schedule create --cron "50 6 * * 1-5" --description "mid-peak 65% 6:50 AM" --ref main --variable "soc_target:65" --cronTimeZone "America/Los_Angeles"
-glab schedule create --cron "00 16 * * 1-5" --description "peak prep 95% 4:00 PM" --ref main --variable "soc_target:95" --cronTimeZone "America/Los_Angeles"
-glab schedule create --cron "55 16 * * 1-5" --description "peak drain 35% 4:55 PM" --ref main --variable "soc_target:35" --cronTimeZone "America/Los_Angeles"
-glab schedule create --cron "10 21 * * 1-5" --description "off-peak recharge 95% 9:10 PM" --ref main --variable "soc_target:95" --cronTimeZone "America/Los_Angeles"
-```
-
-### Advantages of GitLab CI
-
-1. **Native timezone support** - schedules automatically handle PST/PDT transitions
-2. **Per-schedule variables** - each schedule can have different SOC targets
-3. **Better reliability** - GitLab's scheduled pipelines are generally more consistent
-4. **Free tier** - GitLab provides 400 minutes/month of CI/CD for free
-
-### Manual Testing
-
-You can manually trigger jobs from **CI/CD → Pipelines → Run Pipeline** and set the `SOC_VALUE` variable.
-
-### Migration from GitHub Actions
-
-1. Set up GitLab repository and schedules as above
-2. Disable GitHub Actions schedules (or delete the `.github` folder)
-3. Monitor GitLab pipelines to ensure they're running correctly
-
-The same `set_soc.sh` script works in both environments!
-
+* [Github Actions](#github-actions)
+* [GitLab CI](#gitlab-ci)
 
 ## Manual Usage
 
@@ -132,87 +42,113 @@ DEBUG=true ./set_soc.sh 65
 ```
 
 Debug mode will show:
-- All bash commands being executed
-- Password hash generation
-- Exact curl commands being run
-- Full API responses
-- Token extraction process
-- Success/failure checks
+
+* All bash commands being executed
+* Password hash generation
+* Exact curl commands being run
+* Full API responses
+* Token extraction process
+* Success/failure checks
 
 This helps diagnose authentication issues, network problems, or API errors.
 
-### Manual GitHub Actions Trigger
+## GitHub Actions
 
-You can manually trigger the workflow from the GitHub Actions tab with a custom SOC value.
+GitHub Actions is a very popular platform, but it has enough issues that I gave up on it pretty quickly
 
-## Script Details
+* [cron schedules run 5-45 minutes late](./github_check_cron_drift.sh)
+* no native timezone support (always UTC)
+* no per-schedule variables (have to hardcode SOC values in the workflow)
 
-The `set_soc.sh` script:
+The cron drift might not be as big a problem on paid plans or hosted runners,
+but I wanted something free to run something 3-5 times a day
 
-- Takes one argument: SOC percentage (0-100)
-- Uses FranklinWH's REST API to authenticate and set battery mode
-- Sets the battery to self-consumption mode with the specified SOC threshold
-- Provides success/error feedback
-- Requires no Python dependencies (pure bash + curl + openssl)
-- Includes debug mode for troubleshooting (set `DEBUG=true`)
+That said, if you want to go this route, follow the instructions below.
 
-## Customization
+### 1. Fork or Clone This Repository
 
-### Changing SOC Values
+Fork this repository to your GitHub account
 
-Edit the workflow file to change the SOC values:
+### 2. Configure CI Secrets
+
+In your GitHub repository, go to [**Settings → Secrets and variables →
+Actions**](https://github.com/yourusername/franklin-battery-scheduler/settings/secrets/actions)
+and add these repository secrets:
+
+* `FRANKLIN_EMAIL`: Your FranklinWH account email
+* `FRANKLIN_PASSWORD`: Your FranklinWH account password
+* `FRANKLIN_GATEWAY_ID`: Your gateway ID (found in FranklinWH app under More → Site Address)
+* `ENABLE_GITHUB_ACTIONS`: Set to `true` to enable GitHub Actions scheduling
+
+### 3. Adjust Schedules including Timezone
+
+The workflow is configured for PST (UTC-8). To adjust for your timezone, edit
+[.github/workflows/battery-schedule.yml](.github/workflows/battery-schedule.yml)
+and modify the cron expressions:
 
 ```yaml
-run: ./set_soc.sh 80  # Change from default 65%
+# Example for EST (UTC-5):
+* cron: '50 11 * * *'  # 6:50 AM EST
+* cron: '55 22 * * *'  # 4:55 PM EST
+* cron: '0 4 * * *'    # 10:00 PM EST
 ```
 
-### Changing Schedule Times
+Then you'll need to modify each of the steps to match the new times
 
-Modify the cron expressions in the workflow file. Use [crontab.guru](https://crontab.guru) to help generate cron expressions.
+```yaml
+if: github.event.schedule == '50 11 * * *'
+```
 
-### Adding More Schedule Points
+and adjust the SOC targets accordingly
 
-Add additional cron schedules and corresponding job steps to the workflow file.
+## GitLab CI
 
-## Troubleshooting
+GitLab CI is similar to GitHub Actions, but has some advantages, the biggest
+one being running cron jobs closer to the time declared
 
-### Check GitHub Actions Logs
+1. **Better reliability** - GitLab's scheduled pipelines are generally more consistent
+2. **Native timezone support** - You can set the timezone for each schedule
+3. **Per-schedule variables** - each schedule can have different SOC targets
+4. **Free tier** - GitLab provides 400 minutes/month of CI/CD for free
 
-If the automation isn't working, check the Actions tab in your GitHub repository for error logs.
+### 1. Fork or Clone This Repository
 
-### Verify Secrets
+Fork this repository to your GitLab account
 
-Ensure all three secrets are correctly set in your repository settings.
+### 2. Configure CI Secrets
 
-### Test Locally
+Go to your [GitLab project → **Settings → CI/CD → Variables**](https://gitlab.com/mmrobins/franklin-battery-scheduler/-/settings/ci_cd#js-cicd-variables-settings) and add:
 
-Test the script locally first to verify your credentials work:
+* `FRANKLIN_EMAIL`: Your FranklinWH account email
+* `FRANKLIN_PASSWORD`: Your FranklinWH account password (mark as **Masked**)
+* `FRANKLIN_GATEWAY_ID`: Your gateway ID from the FranklinWH app
+* `ENABLE_GITLAB_CI`: Set to `true` to enable GitLab CI scheduling
+
+### 3. Set Up Pipeline Schedules
+
+You can create the schedules manually in the GitLab UI, or you can use the `glab` command-line tool.
+
+### Using `glab`
 
 ```bash
-./set_soc.sh 50
+glab schedule create --cron "50 6 * * 1-5" --description "mid-peak 65% 6:50 AM" --ref main --variable "soc_target:65" --cronTimeZone "America/Los_Angeles"
+glab schedule create --cron "00 16 * * 1-5" --description "peak prep 95% 4:00 PM" --ref main --variable "soc_target:95" --cronTimeZone "America/Los_Angeles"
+glab schedule create --cron "55 16 * * 1-5" --description "peak drain 35% 4:55 PM" --ref main --variable "soc_target:35" --cronTimeZone "America/Los_Angeles"
+glab schedule create --cron "10 21 * * 1-5" --description "off-peak recharge 95% 9:10 PM" --ref main --variable "soc_target:95" --cronTimeZone "America/Los_Angeles"
 ```
-
-### Common Issues
-
-- **Invalid credentials**: Double-check your email/password
-- **Gateway ID**: Ensure you're using the correct gateway ID from the app
-- **Network issues**: The script requires internet access to reach FranklinWH servers
-
-## Security
-
-- Never commit credentials directly to the repository
-- All sensitive information is stored in GitHub Secrets
-- The script only reads environment variables, never logs them
 
 ## FAQ
 
 ### Why is this written in bash?
 
-Bash is lightweight, has no dependencies, and is natively supported in GitHub Actions runners.  It might not be pretty, but it gets the job done.
+Bash is lightweight, has no dependencies, and is natively supported in GitHub
+Actions runners.  It might not be pretty, but it gets the job done.
 
 ### Is the FranklinWH API documented?
 
-Not that I know of.  I basically copied what was done in https://github.com/richo/franklinwh-python, but I always get annoyed setting up python depenencies, so I ported it to bash to be as easy to run as possible.
+Not that I know of.  I basically copied what was done in
+https://github.com/richo/franklinwh-python, but I always get annoyed setting up
+python depenencies, so I ported it to bash to be as easy to run as possible.
 
 ## License
 
