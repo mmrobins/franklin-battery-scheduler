@@ -5,15 +5,6 @@
 # Mid-Peak 7AM-5PM (weekdays only) 16.99 cents/kWh
 # Peak 5PM-9PM (weekdays only) 43.89 cents/kWh
 
-spec:
-  inputs:
-    soc_target:
-      description: "Target SOC percentage (0-100)"
-      type: string
-      default: "65"
-
----
-
 stages:
   - battery-control
 
@@ -23,6 +14,9 @@ variables:
   # FRANKLIN_PASSWORD
   # FRANKLIN_GATEWAY_ID
   # ENABLE_GITLAB_CI
+  # gitlab recommends inputs instead of variables
+  # but their glab schedule tools doesn't seem to support using inputs
+  SOC_TARGET: "65"
 
 set_battery_soc:
   stage: battery-control
@@ -31,7 +25,7 @@ set_battery_soc:
     - apt-get update && apt-get install -y curl openssl
     - chmod +x set_soc.sh
   script:
-    - ./set_soc.sh $[[ inputs.soc_target ]]
+    - ./set_soc.sh $SOC_TARGET
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $ENABLE_GITLAB_CI == "true"
     - if: $CI_PIPELINE_SOURCE == "web"
