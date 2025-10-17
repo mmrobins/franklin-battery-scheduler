@@ -73,11 +73,11 @@ but I wanted something free to run something 3-5 times a day
 
 That said, if you want to go this route, follow the instructions below.
 
-### 1. Fork or Clone This Repository
+### 1. Fork or Clone This GitHub Repository
 
-Fork this repository to your GitHub account
+Fork [this repository](https://github.com/mmrobins/franklin-battery-scheduler) to your GitHub account
 
-### 2. Configure CI Secrets
+### 2. Configure GitHub Actions Secrets
 
 In your GitHub repository, go to [**Settings → Secrets and variables →
 Actions**](https://github.com/yourusername/franklin-battery-scheduler/settings/secrets/actions)
@@ -119,11 +119,11 @@ one being running cron jobs closer to the time declared
 3. **Per-schedule variables** - each schedule can have different SOC targets
 4. **Free tier** - GitLab provides 400 minutes/month of CI/CD for free
 
-### 1. Fork or Clone This Repository
+### 1. Fork or Clone This GitLab Repository
 
-Fork this repository to your GitLab account
+Fork [this repository](https://gitlab.com/mmrobins/franklin-battery-scheduler) to your GitLab account
 
-### 2. Configure CI Secrets
+### 2. Configure GitLab CI Secrets
 
 Go to your [GitLab project → **Settings → CI/CD → Variables**](https://gitlab.com/mmrobins/franklin-battery-scheduler/-/settings/ci_cd#js-cicd-variables-settings) and add:
 
