@@ -219,6 +219,8 @@ paths:
         - **Self Consumption (2)**: Maximize self-consumption of solar energy
         - **Emergency Backup (3)**: Maintain battery charge for backup power
       operationId: updateMode
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
