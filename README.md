@@ -80,7 +80,6 @@ You can click the "Authorize" button in the Swagger UI and paste in the token,
 and then you'll be able to test the other endpoints, most of which will require
 your Gateway ID.
 
-
 ### Debug Mode
 
 For troubleshooting, you can enable debug mode by setting `DEBUG=true`:
@@ -102,11 +101,12 @@ This helps diagnose authentication issues, network problems, or API errors.
 
 ## GitHub Actions
 
-GitHub Actions is a very popular platform, but it has enough issues that I gave up on it pretty quickly
+GitHub Actions is a very popular platform, but it has enough issues that I gave
+up on it pretty quickly
 
 * [cron schedules run 5-45 minutes late](./bin/github_check_cron_drift.sh)
 * no native timezone support (always UTC)
-* no per-schedule variables (have to hardcode SOC values in the workflow)
+* you have to modify the github workflow file to change schedules or SOC targets
 
 The cron drift might not be as big a problem on paid plans or hosted runners,
 but I wanted something free to run something 3-5 times a day
@@ -191,11 +191,18 @@ glab schedule create --cron "10 21 * * 1-5" --description "off-peak recharge 95%
 
 Bash is lightweight, has no dependencies, and is natively supported just about everywhere you might wanna run this.  It might not be pretty, but it gets the job done.
 
-### Is the FranklinWH API documented?
+### Is the FranklinWH API documented officially anywhere?
 
 Not that I know of.  I basically copied what was done in
 https://github.com/richo/franklinwh-python, but I always get annoyed setting up
-python depenencies, so I ported it to bash to be as easy to run as possible.
+python depenencies, so I ported it to bash to be as easy to run as possible,
+and added my own [API documentation](#api-documentation) based on
+reverse-engineering the app traffic.
+
+### How do I handle daylight savings time changes?
+
+I don't know except manually adjust the cron jobs when it happens, but if you
+think of something better, please open an issue or PR!
 
 ## License
 
