@@ -158,7 +158,7 @@ and adjust the SOC targets accordingly
 GitLab CI is similar to GitHub Actions, but has some advantages, the biggest
 one being running cron jobs closer to the time declared
 
-1. **Better reliability** - GitLab's scheduled pipelines run [within 5-10 minutes of the scheduled time](./bin/gitlab_check_cron_drift.sh))
+1. **Better reliability** - GitLab's scheduled pipelines run [within 5-10 minutes of the scheduled time](./bin/gitlab_check_cron_drift.sh)
 2. **Native timezone support** - You can set the timezone for each schedule
 3. **Per-schedule variables** - each schedule can have different SOC targets
 4. **Free tier** - GitLab provides 400 minutes/month of CI/CD for free
@@ -207,6 +207,12 @@ reverse-engineering the app traffic.
 
 I don't know except manually adjust the cron jobs when it happens, but if you
 think of something better, please open an issue or PR!
+
+### Can I run this without internet directly connected to the franklin AP wifi point?
+
+Not yet...  I haven't yet figured out how the mobile app communicates with the
+wifi or bluetooth AP directly.  If you have any ideas, please open an issue or
+PR!
 
 ## License
 
