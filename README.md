@@ -12,7 +12,7 @@ make it easy to set the SOC targets on a schedule.
 
 ## Overview
 
-This repository's main feature is a [bash script](.set_soc.sh) that sets your
+This repository's main feature is a [bash script](set_soc.sh) that sets your
 FranklinWH battery to configurable SOC thresholds, and different modes (TOU -
 Time of Use, Self Consumption, Backup)
 
