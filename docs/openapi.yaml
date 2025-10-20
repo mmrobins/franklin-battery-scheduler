@@ -407,6 +407,205 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
 
+  # === MONITORING ENDPOINTS ===
+  /hes-gateway/terminal/getDeviceCompositeInfo:
+    get:
+      summary: Get Device Composite Info
+      description: Get comprehensive device information including status, configuration, and metrics
+      operationId: getDeviceCompositeInfo
+      tags:
+        - Monitoring
+      parameters:
+        - name: gatewayId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gateway ID
+          example: 100..............070
+        - name: refreshFlag
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Force refresh of cached data
+          example: 1
+      responses:
+        '200':
+          description: Device composite information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /hes-gateway/terminal/getDeviceInfoV2:
+    get:
+      summary: Get Device Info V2
+      description: Get detailed device information (version 2 API)
+      operationId: getDeviceInfoV2
+      tags:
+        - Monitoring
+      parameters:
+        - name: gatewayId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gateway ID
+          example: 100..............050
+      responses:
+        '200':
+          description: Device information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /hes-gateway/terminal/message/selectMessage:
+    get:
+      summary: Get Messages
+      description: Get system messages and notifications
+      operationId: getMessages
+      tags:
+        - Monitoring
+      parameters:
+        - name: gatewayId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gateway ID
+          example: 100..............050
+      responses:
+        '200':
+          description: System messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /hes-gateway/terminal/chargePowerDetails:
+    get:
+      summary: Get Charge Power Details
+      description: Get detailed battery charging power information
+      operationId: getChargePowerDetails
+      tags:
+        - Monitoring
+      parameters:
+        - name: gatewayId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gateway ID
+          example: 100..............050
+      responses:
+        '200':
+          description: Charge power details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /hes-gateway/terminal/backupHistorySummary:
+    get:
+      summary: Get Backup History Summary
+      description: Get summary of backup power events and usage
+      operationId: getBackupHistorySummary
+      tags:
+        - Monitoring
+      parameters:
+        - name: gatewayId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gateway ID
+          example: 100..............050
+      responses:
+        '200':
+          description: Backup history summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /api-energy/electric/getFhpElectricData:
+    get:
+      summary: Get Electric Data
+      description: Get electrical data from the FHP system
+      operationId: getFhpElectricData
+      tags:
+        - Monitoring
+      parameters:
+        - name: gatewayId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gateway ID
+          example: 100..............050
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Data type (1=daily)
+          example: 1
+        - name: dayTime
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Date for data retrieval
+          example: "2025-10-17"
+      responses:
+        '200':
+          description: Electric data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /hes-gateway/terminal/bill/electric/selectBenefitInfo:
+    get:
+      summary: Get Electric Bill Benefit Info
+      description: Get electricity billing benefit information
+      operationId: getElectricBillBenefit
+      tags:
+        - Monitoring
+      parameters:
+        - name: gatewayId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gateway ID
+          example: 100..............050
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Data type (1=daily)
+          example: 1
+        - name: dayTime
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Date for benefit calculation
+          example: "2025-10-17"
+      responses:
+        '200':
+          description: Bill benefit information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
 components:
   securitySchemes:
     bearerAuth:
