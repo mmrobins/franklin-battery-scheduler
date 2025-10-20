@@ -8,6 +8,18 @@
 # 2. The token must be stored in the `GITLAB_PRIVATE_TOKEN` environment variable.
 # 3. `jq` must be installed (`brew install jq`).
 
+# Example Output:
+#╭─[~/work/franklin-battery-scheduler]─[mattrobinson@Matts-MacBook-Pro-2]-[20251020-13:53:53]-‹more_api›-<3.3.2>
+#╰─ [0]% ./bin/gitlab_check_cron_drift.sh
+#Scheduled Time            | Actual Time               | Drift (m)       | Cron
+#--------------------------|---------------------------|-----------------|----------------
+#2025-10-20 13:50:00       | 2025-10-20 13:56:34       | 6               | 50 6 * * 1-5 (America/Los_Angeles)
+#2025-10-18 04:10:00       | 2025-10-18 04:14:37       | 4               | 10 21 * * 1-5 (America/Los_Angeles)
+#2025-10-17 23:55:00       | 2025-10-17 23:58:53       | 3               | 55 16 * * 1-5 (America/Los_Angeles)
+#2025-10-17 23:00:00       | 2025-10-17 23:07:09       | 7               | 00 16 * * 1-5 (America/Los_Angeles)
+#2025-10-17 13:50:00       | 2025-10-17 13:54:26       | 4               | 50 6 * * 1-5 (America/Los_Angeles)
+#2025-10-17 04:10:00       | 2025-10-17 04:15:14       | 5               | 10 21 * * 1-5 (America/Los_Angeles)
+
 # --- Configuration ---
 HISTORY_LIMIT=20 # Number of recent pipelines to check
 PROJECT_PATH="mmrobins/franklin-battery-scheduler"
