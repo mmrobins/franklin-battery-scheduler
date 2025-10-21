@@ -183,10 +183,10 @@ You can create the schedules manually in the GitLab UI, or you can use the `glab
 ### Using `glab`
 
 ```bash
-glab schedule create --cron "50 6 * * 1-5" --description "mid-peak 65% 6:50 AM" --ref main --variable "soc_target:65" --cronTimeZone "America/Los_Angeles"
-glab schedule create --cron "00 16 * * 1-5" --description "peak prep 95% 4:00 PM" --ref main --variable "soc_target:95" --cronTimeZone "America/Los_Angeles"
-glab schedule create --cron "55 16 * * 1-5" --description "peak drain 35% 4:55 PM" --ref main --variable "soc_target:35" --cronTimeZone "America/Los_Angeles"
-glab schedule create --cron "10 21 * * 1-5" --description "off-peak recharge 95% 9:10 PM" --ref main --variable "soc_target:95" --cronTimeZone "America/Los_Angeles"
+glab schedule create --cron "50 6 * * 1-5" --description "mid-peak 65% 6:50 AM" --ref main --variable "SOC_TARGET:65" --cronTimeZone "America/Los_Angeles"
+glab schedule create --cron "00 16 * * 1-5" --description "peak prep 95% 4:00 PM" --ref main --variable "SOC_TARGET:95" --cronTimeZone "America/Los_Angeles"
+glab schedule create --cron "55 16 * * 1-5" --description "peak drain 35% 4:55 PM" --ref main --variable "SOC_TARGET:35" --cronTimeZone "America/Los_Angeles"
+glab schedule create --cron "10 21 * * 1-5" --description "off-peak recharge 95% 9:10 PM" --ref main --variable "SOC_TARGET:95" --cronTimeZone "America/Los_Angeles"
 ```
 
 ## FAQ
