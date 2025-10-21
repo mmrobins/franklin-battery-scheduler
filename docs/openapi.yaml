@@ -325,13 +325,7 @@ paths:
         Note: This endpoint's functionality is not fully documented.
       operationId: getControllableLoads
       parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Gateway ID
-          example: ABC123456
+        - $ref: '#/components/parameters/GatewayId'
         - name: lang
           in: query
           required: true
@@ -355,13 +349,7 @@ paths:
         Note: This endpoint's functionality is not fully documented.
       operationId: getAccessoryList
       parameters:
-        - name: gatewayId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Gateway ID
-          example: ABC123456
+        - $ref: '#/components/parameters/GatewayId'
         - name: lang
           in: query
           required: true
@@ -385,13 +373,7 @@ paths:
         Note: This endpoint's functionality is not fully documented.
       operationId: getEquipmentList
       parameters:
-        - name: gatewayId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Gateway ID
-          example: ABC123456
+        - $ref: '#/components/parameters/GatewayId'
         - name: lang
           in: query
           required: true
@@ -416,13 +398,7 @@ paths:
       tags:
         - Monitoring
       parameters:
-        - name: gatewayId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Gateway ID
-          example: 100..............070
+        - $ref: '#/components/parameters/GatewayId'
         - name: refreshFlag
           in: query
           schema:
@@ -446,13 +422,7 @@ paths:
       tags:
         - Monitoring
       parameters:
-        - name: gatewayId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Gateway ID
-          example: 100..............050
+        - $ref: '#/components/parameters/GatewayId'
       responses:
         '200':
           description: Device information
@@ -469,13 +439,7 @@ paths:
       tags:
         - Monitoring
       parameters:
-        - name: gatewayId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Gateway ID
-          example: 100..............050
+        - $ref: '#/components/parameters/GatewayId'
       responses:
         '200':
           description: System messages
@@ -492,13 +456,7 @@ paths:
       tags:
         - Monitoring
       parameters:
-        - name: gatewayId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Gateway ID
-          example: 100..............050
+        - $ref: '#/components/parameters/GatewayId'
       responses:
         '200':
           description: Charge power details
@@ -515,13 +473,7 @@ paths:
       tags:
         - Monitoring
       parameters:
-        - name: gatewayId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Gateway ID
-          example: 100..............050
+        - $ref: '#/components/parameters/GatewayId'
       responses:
         '200':
           description: Backup history summary
@@ -538,13 +490,7 @@ paths:
       tags:
         - Monitoring
       parameters:
-        - name: gatewayId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Gateway ID
-          example: 100..............050
+        - $ref: '#/components/parameters/GatewayId'
         - name: type
           in: query
           required: true
@@ -576,13 +522,7 @@ paths:
       tags:
         - Monitoring
       parameters:
-        - name: gatewayId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Gateway ID
-          example: 100..............050
+        - $ref: '#/components/parameters/GatewayId'
         - name: type
           in: query
           required: true
@@ -607,6 +547,15 @@ paths:
                 $ref: '#/components/schemas/SuccessResponse'
 
 components:
+  parameters:
+    GatewayId:
+      name: gatewayId
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Gateway ID
+      example: ABC123456
   securitySchemes:
     bearerAuth:
       type: apiKey
