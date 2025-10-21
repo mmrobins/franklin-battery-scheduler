@@ -31,6 +31,8 @@ paths:
   /hes-gateway/terminal/initialize/appUserOrInstallerLogin:
     post:
       summary: User Login
+      tags:
+        - Authentication
       description: |
         Authenticate with FranklinWH and receive an access token.
         The password should be MD5 hashed before sending.
@@ -108,6 +110,8 @@ paths:
   /hes-gateway/terminal/sendMqtt:
     post:
       summary: Send MQTT Command
+      tags:
+        - Control
       description: |
         Generic endpoint for sending MQTT-style commands to the gateway.
         This is used internally for various operations including status queries and control commands.
@@ -211,6 +215,8 @@ paths:
   /hes-gateway/terminal/tou/updateTouMode:
     post:
       summary: Update Operating Mode
+      tags:
+        - Control
       description: |
         Change the operating mode of the FranklinWH system.
 
@@ -320,6 +326,8 @@ paths:
   /hes-gateway/terminal/selectTerGatewayControlLoadByGatewayId:
     get:
       summary: Get Controllable Loads
+      tags:
+        - Configuration
       description: |
         Retrieve information about controllable loads connected to the gateway.
         Note: This endpoint's functionality is not fully documented.
@@ -344,6 +352,8 @@ paths:
   /hes-gateway/terminal/getIotAccessoryList:
     get:
       summary: Get IoT Accessory List
+      tags:
+        - Configuration
       description: |
         Retrieve list of IoT accessories connected to the gateway.
         Note: This endpoint's functionality is not fully documented.
@@ -368,6 +378,8 @@ paths:
   /hes-gateway/manage/getEquipmentList:
     get:
       summary: Get Equipment List
+      tags:
+        - Configuration
       description: |
         Retrieve list of equipment associated with the gateway.
         Note: This endpoint's functionality is not fully documented.
