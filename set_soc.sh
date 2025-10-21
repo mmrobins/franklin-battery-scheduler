@@ -28,17 +28,17 @@ fi
 # Validate MODE_ID and set currendId and workMode
 case "$MODE_ID" in
     "tou") # Time of Use
-        CURREND_ID="9322"
+        CURREND_ID="162382"
         WORK_MODE="1"
         MODE_NAME="Time of Use"
         ;;
     "self") # Self Consumption
-        CURREND_ID="9323"
+        CURREND_ID="150521"
         WORK_MODE="2"
         MODE_NAME="Self Consumption"
         ;;
     "backup") # Emergency Backup
-        CURREND_ID="9324"
+        CURREND_ID="150953"
         WORK_MODE="3"
         MODE_NAME="Emergency Backup"
         ;;
