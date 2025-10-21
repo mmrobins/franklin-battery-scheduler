@@ -25,7 +25,7 @@ set_battery_soc:
     - apt-get update && apt-get install -y curl openssl
     - chmod +x set_soc.sh
   script:
-    - ./set_soc.sh $SOC_TARGET
+    - ./set_soc.sh $SOC_TARGET $MODE
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $ENABLE_GITLAB_CI == "true"
     - if: $CI_PIPELINE_SOURCE == "web"
