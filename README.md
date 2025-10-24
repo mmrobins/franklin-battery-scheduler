@@ -88,9 +88,9 @@ APP_ACCOUNT::eyJ0eXAi_big_long_string_of_characters
 
 ### API Documentation
 
-You can view the FranklinWH Energy API documentation in an interactive Swagger
-UI by clicking the link below.  Note, this is NOT official documentation, just
-what I've reverse-engineered from various sources.
+You can view the [FranklinWH Energy API documentation](./docs/openapi.yaml) in
+an interactive Swagger UI by clicking the link below.  Note, this is NOT
+official documentation, just what I've reverse-engineered from various sources.
 
 [View API Documentation in Swagger UI](https://editor.swagger.io/?url=https://raw.githubusercontent.com/mmrobins/franklin-battery-scheduler/main/docs/openapi.yaml)
 
