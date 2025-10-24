@@ -42,6 +42,11 @@ But I may never get to that, and figured I'd throw the documentation in an
 easily consumable format in case anybody else wanted to build something against
 the FranklinWH API.
 
+I'd *really* like to figure out how the mobile app talks to the battery over
+the AP wifi gateway so that I don't have to talk to the public internet at all,
+but haven't yet figured that out.  If you have any ideas, please open an issue
+or PR!
+
 ## Where to Find Your Gateway ID
 
 In your [FranklinWH mobile app](https://www.franklinwh.com/support/articles/detail/how-can-i-download-the-franklinwh-app) go to:
