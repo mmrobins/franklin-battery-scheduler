@@ -28,6 +28,20 @@ public CI/CD services are documented below
 * AWS lambda (not documented yet)
 * More options welcome - please open an issue or PR if you have another suggestion
 
+If you have other ideas of things you'd like to do with the FranklinWH API, the
+[api documentation](#api-documentation) section below has more info on how to
+interact with it directly.  I ran a network proxy against the FranklinWH mobile
+app in an emulator to reverse-engineer the API calls it makes.  There's a couple things
+I might do with this repo based on that in the near future
+
+* download the "Analysis" data and dump into some sorta stats program for my own analysis
+* Use the weather data to help decide the SOC I set in my cron jobs
+* run my own $ saved calculation based on TOU pricing vs standard pricing
+
+But I may never get to that, and figured I'd throw the documentation in an
+easily consumable format in case anybody else wanted to build something against
+the FranklinWH API.
+
 ## Where to Find Your Gateway ID
 
 In your [FranklinWH mobile app](https://www.franklinwh.com/support/articles/detail/how-can-i-download-the-franklinwh-app) go to:
