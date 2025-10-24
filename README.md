@@ -220,7 +220,7 @@ Not that I know of.  I basically copied what was done in
 https://github.com/richo/franklinwh-python, but I always get annoyed setting up
 python depenencies, so I ported it to bash to be as easy to run as possible,
 and added my own [API documentation](#api-documentation) based on
-reverse-engineering the app traffic.
+other reverse-engineering efforts I've found on GitHub
 
 ### How do I handle daylight savings time changes?
 
