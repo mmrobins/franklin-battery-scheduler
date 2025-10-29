@@ -38,7 +38,7 @@ jobs:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
           FRANKLIN_GATEWAY_ID: ${{ secrets.FRANKLIN_GATEWAY_ID }}
-        run: ./set_soc.sh 65
+        run: ./franklin set-soc 65
 
       - name: peak prep 95% 4:00 PM
         if: github.event.schedule == '00 23 * * 1-5'
@@ -46,7 +46,7 @@ jobs:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
           FRANKLIN_GATEWAY_ID: ${{ secrets.FRANKLIN_GATEWAY_ID }}
-        run: ./set_soc.sh 95
+        run: ./franklin set-soc 95
 
       - name: peak drain 35% 4:55 PM
         if: github.event.schedule == '55 23 * * 1-5'
@@ -54,7 +54,7 @@ jobs:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
           FRANKLIN_GATEWAY_ID: ${{ secrets.FRANKLIN_GATEWAY_ID }}
-        run: ./set_soc.sh 35
+        run: ./franklin set-soc 35
 
       - name: off-peak recharge 95% 9:10 PM
         if: github.event.schedule == '10 4 * * 1-5'
@@ -62,7 +62,7 @@ jobs:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
           FRANKLIN_GATEWAY_ID: ${{ secrets.FRANKLIN_GATEWAY_ID }}
-        run: ./set_soc.sh 95
+        run: ./franklin set-soc 95
 
       - name: Set manual SOC
         if: github.event_name == 'workflow_dispatch'
@@ -70,4 +70,4 @@ jobs:
           FRANKLIN_EMAIL: ${{ secrets.FRANKLIN_EMAIL }}
           FRANKLIN_PASSWORD: ${{ secrets.FRANKLIN_PASSWORD }}
           FRANKLIN_GATEWAY_ID: ${{ secrets.FRANKLIN_GATEWAY_ID }}
-        run: ./set_soc.sh ${{ github.event.inputs.soc }}
+        run: ./franklin set-soc ${{ github.event.inputs.soc }}

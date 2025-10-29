@@ -1,0 +1,53 @@
+name: franklin
+help: A command line interface for interacting with the FranklinWH battery API.
+version: 1.0.0
+
+environment_variables:
+- name: FRANKLIN_EMAIL
+  help: Your FranklinWH account email.
+  required: true
+- name: FRANKLIN_PASSWORD
+  help: Your FranklinWH account password.
+  required: true
+- name: FRANKLIN_GATEWAY_ID
+  help: Your FranklinWH gateway ID.
+  required: true
+
+commands:
+- name: get-token
+  help: Get an authentication token.  This will be done automatically when needed in other commands.
+- name: set-soc
+  help: Set the battery's state of charge and optionally mode.
+  args:
+  - name: soc
+    help: The state of charge to set (0-100).
+    required: true
+  - name: mode
+    help: The mode to set (tou, self, backup).
+    default: self
+
+- name: fetch-daily-data
+  help: Fetch the daily analytics data.
+  flags:
+  - long: --start-date
+    short: -s
+    arg: date
+    help: The start date for the analytics data (YYYY-MM-DD).
+  - long: --end-date
+    short: -e
+    arg: date
+    help: The end date for the analytics data (YYYY-MM-DD).
+
+- name: fetch-fine-grained-data
+  help: Fetch the fine-grained analytics data.
+  flags:
+  - long: --date
+    short: -d
+    arg: date
+    help: The date for the analytics data (YYYY-MM-DD).
+
+- name: clear-token
+  help: Clear the cached authentication token.
+
+- name: status
+  help: Fetch the current state of the battery.

@@ -22,10 +22,10 @@ set_battery_soc:
   stage: battery-control
   image: ubuntu:latest
   before_script:
-    - apt-get update && apt-get install -y curl openssl
-    - chmod +x set_soc.sh
+    - apt-get update && apt-get install -y curl jq openssl
+    - chmod +x franklin
   script:
-    - ./set_soc.sh $SOC_TARGET $MODE
+    - ./franklin set-soc $SOC_TARGET $MODE
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $ENABLE_GITLAB_CI == "true"
     - if: $CI_PIPELINE_SOURCE == "web"

@@ -526,6 +526,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
 
+  /api-energy/power/getFhpPowerByDay:
+    get:
+      summary: Get Fine-Grained Power Data
+      description: Get fine-grained power data for a specific day at 5-minute intervals.
+      operationId: getFhpPowerByDay
+      tags:
+        - Monitoring
+      parameters:
+        - $ref: '#/components/parameters/GatewayId'
+        - name: dayTime
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Date for data retrieval
+          example: "2025-10-28"
+      responses:
+        '200':
+          description: Fine-grained power data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FhpPowerByDayResponse'
+
   /hes-gateway/terminal/bill/electric/selectBenefitInfo:
     get:
       summary: Get Electric Bill Benefit Info
@@ -557,6 +582,59 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
+
+  /hes-gateway/terminal/tou/getGatewayTouListV2:
+    post:
+      summary: Get Gateway TOU List V2
+      description: |
+        Get the list of time-of-use configurations and operating modes with their settings.
+        This endpoint returns configuration data for different operating modes including the currently set SOC values,
+        minimum SOC values (absolute minimums allowed), and maximum SOC values for each mode.
+      operationId: getGatewayTouListV2
+      tags:
+        - Configuration
+      parameters:
+        - $ref: '#/components/parameters/GatewayId'
+        - name: showType
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Display type flag
+          example: 1
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: TOU configuration list for gateway
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Operate success!"
+                  result:
+                    $ref: '#/components/schemas/TouListV2Response'
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          description: Token expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            example: {}
 
 components:
   parameters:
@@ -821,6 +899,135 @@ components:
           type: string
           description: Error message
           example: Token expired
+
+    FhpPowerByDayResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 200
+        msg:
+          type: string
+          example: Success
+        result:
+          type: object
+          properties:
+            deviceTimeArray:
+              type: array
+              items:
+                type: string
+                format: date-time
+            powerSolarHomeArray:
+              type: array
+              items:
+                type: number
+            powerSolarGirdArray:
+              type: array
+              items:
+                type: number
+            powerSolarFhpArray:
+              type: array
+              items:
+                type: number
+            powerGirdFhpArray:
+              type: array
+              items:
+                type: number
+            powerGirdHomeArray:
+              type: array
+              items:
+                type: number
+            powerFhpGirdArray:
+              type: array
+              items:
+                type: number
+            powerFhpHomeArray:
+              type: array
+              items:
+                type: number
+            powerGenFhpArray:
+              type: array
+              items:
+                type: number
+            powerGenHomeArray:
+              type: array
+              items:
+                type: number
+
+    TouListV2Response:
+      type: object
+      description: Response structure for getGatewayTouListV2 endpoint
+      properties:
+        currendId:
+          type: integer
+          description: ID of the currently active mode
+          example: 150521
+        list:
+          type: array
+          description: List of operating modes with their settings
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Mode ID (150521=Self Consumption, 162382=TOU, 150953=Backup)
+                example: 150521
+              name:
+                type: string
+                description: Mode name
+                example: "Self Consumption"
+              soc:
+                type: number
+                description: Currently configured SOC value for this mode (the minimum SOC setting)
+                example: 20.0
+              maxSoc:
+                type: number
+                description: Maximum allowed SOC for this mode
+                example: 100.0
+              minSoc:
+                type: number
+                description: Minimum allowed SOC setting for this mode (absolute minimum)
+                example: 5.0
+              workMode:
+                type: integer
+                description: Work mode number (1=TOU, 2=Self, 3=Backup)
+                example: 2
+              editSocFlag:
+                type: boolean
+                description: Whether SOC can be edited for this mode
+                example: true
+              multiSOCFlag:
+                type: boolean
+                description: Whether multiple SOC values are allowed for this mode
+                example: false
+        stromEn:
+          type: integer
+          description: Enable flag
+          example: 1
+        backupForeverFlag:
+          type: integer
+          description: Backup forever flag
+          example: 1
+        zoneInfo:
+          type: string
+          description: Time zone information
+          example: "America/Los_Angeles"
+        vppSocVo:
+          type: object
+          description: VPP (Virtual Power Plant) SOC settings
+          properties:
+            vppSoc:
+              type: number
+              description: VPP SOC setting
+              example: 20.0
+            vppMinSoc:
+              type: number
+              description: VPP minimum SOC
+              example: 5.0
+            vppMaxSoc:
+              type: number
+              description: VPP maximum SOC
+              example: 100.0
 
 tags:
   - name: Authentication

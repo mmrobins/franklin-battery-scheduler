@@ -1,29 +1,5 @@
-#!/bin/bash
-
-# Enable debug mode if DEBUG=true
-if [ "$DEBUG" = "true" ]; then
-    echo "DEBUG: Debug mode enabled"
-fi
-
-# Parse arguments
-DEFAULT_MODE="self" # Self Consumption
-MODE_ID="$DEFAULT_MODE"
-
-if [ $# -eq 0 ]; then
-    echo "Usage: $0 <soc_percentage> [mode_name]"
-    echo "Example: $0 65"
-    echo "Example: $0 80 tou (for Time of Use)"
-    exit 1
-elif [ $# -eq 1 ]; then
-    SOC=$1
-elif [ $# -eq 2 ]; then
-    SOC=$1
-    MODE_ID=$2
-else
-    echo "Error: Too many arguments."
-    echo "Usage: $0 <soc_percentage> [mode_id]"
-    exit 1
-fi
+SOC=${args[soc]}
+MODE_ID=${args[mode]:-self}
 
 # Validate MODE_ID and set currendId and workMode
 case "$MODE_ID" in
@@ -54,50 +30,10 @@ if ! [[ "$SOC" =~ ^[0-9]+$ ]] || [ "$SOC" -lt 0 ] || [ "$SOC" -gt 100 ]; then
     exit 1
 fi
 
-# Check required environment variables
-if [ -z "$FRANKLIN_EMAIL" ] || [ -z "$FRANKLIN_PASSWORD" ] || [ -z "$FRANKLIN_GATEWAY_ID" ]; then
-    echo "Error: Required environment variables not set:"
-    echo "  FRANKLIN_EMAIL"
-    echo "  FRANKLIN_PASSWORD" 
-    echo "  FRANKLIN_GATEWAY_ID"
-    exit 1
-fi
-
 BASE_URL="https://energy.franklinwh.com/hes-gateway/terminal"
 
-echo "Logging in to get token..."
-
-# Get MD5 hash of password (using openssl on macOS)
-PASSWORD_HASH=$(echo -n "$FRANKLIN_PASSWORD" | openssl md5 | cut -d' ' -f2)
-
-if [ "$DEBUG" = "true" ]; then
-    echo "DEBUG: Password hash: $PASSWORD_HASH"
-fi
-
-# Login to get token
-LOGIN_CMD="curl -s -X POST \"$BASE_URL/initialize/appUserOrInstallerLogin\" -d \"account=$FRANKLIN_EMAIL\" -d \"password=$PASSWORD_HASH\" -d \"lang=en_US\" -d \"type=1\""
-
-if [ "$DEBUG" = "true" ]; then
-    echo "DEBUG: Running login command:"
-    echo "DEBUG: $LOGIN_CMD"
-fi
-
-LOGIN_RESPONSE=$(eval "$LOGIN_CMD")
-
-if [ "$DEBUG" = "true" ]; then
-    echo "DEBUG: Login response: $LOGIN_RESPONSE"
-fi
-
-# Extract token using grep and sed
-TOKEN=$(echo "$LOGIN_RESPONSE" | grep -o '"token":"[^"]*"' | sed 's/"token":"//' | sed 's/"//')
-
-if [ "$DEBUG" = "true" ]; then
-    echo "DEBUG: Extracted token: $TOKEN"
-fi
-
+  echo "Logging in to get token..."
 if [ -z "$TOKEN" ]; then
-    echo "Error: Failed to get authentication token"
-    echo "Response: $LOGIN_RESPONSE"
     exit 1
 fi
 

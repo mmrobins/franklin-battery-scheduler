@@ -12,13 +12,17 @@ make it easy to set the SOC targets on a schedule.
 
 ## Overview
 
-This repository's main feature is a [bash script](set_soc.sh) that sets your
-FranklinWH battery to configurable SOC thresholds, and different modes (TOU -
-Time of Use, Self Consumption, Backup)
+This repository's main feature is a [Bashly](https://bashly.dev/) generated CLI tool called `franklin` that provides multiple subcommands for interacting with your FranklinWH battery system:
+* `franklin set-soc` - sets your FranklinWH battery to configurable SOC thresholds in different modes (TOU - Time of Use, Self Consumption, Backup)
+* `franklin status` - displays the current state of the battery including SOC, mode, and energy metrics
+* `franklin get-token` - retrieves an authentication token
+* `franklin fetch-daily-data` - fetches daily analytics data
+* `franklin fetch-fine-grained-data` - fetches fine-grained analytics data
+* `franklin clear-token` - clears the cached authentication token
 
-The script itself can easily be [run manually](#Local-Script-Execution)
+The CLI tool can easily be [run manually](#Local-Script-Execution)
 
-There's lots of ways to automate running this script on a schedule.  One simple
+There's lots of ways to automate running the commands on a schedule.  One simple
 way is to use cron jobs on a local machine or server, but this requires the
 machine to be always on and connected to the internet, so a couple different
 public CI/CD services are documented below
@@ -65,15 +69,33 @@ export FRANKLIN_EMAIL="your_email@example.com"
 export FRANKLIN_PASSWORD="your_password"
 export FRANKLIN_GATEWAY_ID="your_gateway_id"
 
-# Run script with desired SOC
-./set_soc.sh 75
+# View help and available commands
+./franklin --help
+
+# Set SOC with desired value
+./franklin set-soc 75
 
 # And optionally specify the mode, defaults to 'self'
 # Modes: tou (Time of Use), self (Self Consumption), backup (Emergency Backup)
-./set_soc.sh 75 tou
+./franklin set-soc 75 tou
+
+# Check current battery status
+./franklin status
+
+# Fetch daily analytics
+./franklin fetch-daily-data --start-date 2025-01-01 --end-date 2025-01-31
+
+# Fetch fine-grained analytics
+./franklin fetch-fine-grained-data --date 2025-01-15
+
+# Get authentication token
+./franklin get-token
+
+# Clear cached authentication token
+./franklin clear-token
 
 # Enable debug mode for troubleshooting
-DEBUG=true ./set_soc.sh 75
+DEBUG=true ./franklin set-soc 75
 ```
 
 ### Getting an Authentication Token
@@ -81,7 +103,7 @@ DEBUG=true ./set_soc.sh 75
 This can be useful for debugging or testing API calls directly.  You can get it by setting the same env vars as in [local script execution](#local-script-execution) and running:
 
 ```bash
-./get_auth_token.sh
+./franklin get-token
 ->
 APP_ACCOUNT::eyJ0eXAi_big_long_string_of_characters
 ```
@@ -108,7 +130,7 @@ your Gateway ID.
 For troubleshooting, you can enable debug mode by setting `DEBUG=true`:
 
 ```bash
-DEBUG=true ./set_soc.sh 65
+DEBUG=true ./franklin set-soc 65
 ```
 
 Debug mode will show:
