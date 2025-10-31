@@ -255,6 +255,24 @@ Not yet...  I haven't yet figured out how the mobile app communicates with the
 wifi or bluetooth AP directly.  If you have any ideas, please open an issue or
 PR!
 
+## Local Development
+
+This project uses [Bashly](https://bashly.dev/) to generate the CLI. If you want to modify the CLI commands or add new functionality, edit the files in the `src/` directory:
+
+- `src/bashly.yml` - Main configuration file defining commands and options
+- `src/*.sh` - Command implementation files (e.g., `status_command.sh`, `set_soc_command.sh`)
+- `src/lib/*.sh` - Shared library functions (e.g., `auth.sh`)
+
+After making changes to source files, regenerate the `franklin` binary:
+
+```bash
+bashly generate
+```
+
+This will create an updated `franklin` executable in the root directory with your changes included.
+
+For more information on Bashly usage, refer to the [official Bashly documentation](https://bashly.dev/).
+
 ## License
 
 MIT License - feel free to modify and distribute.

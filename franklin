@@ -294,9 +294,7 @@ function get_token() {
     if [ -f ".env" ]; then
         source .env
         if [ -n "$FRANKLIN_TOKEN" ]; then
-            if [ "$DEBUG" = "true" ]; then
-                echo "DEBUG: Using cached token from .env file." >&2
-            fi
+            echo "Using cached token auth token from .env file." >&2
             echo "$FRANKLIN_TOKEN"
             return
         fi
@@ -304,9 +302,7 @@ function get_token() {
 
     BASE_URL="https://energy.franklinwh.com/hes-gateway/terminal"
 
-    if [ "$DEBUG" = "true" ]; then
-        echo "DEBUG: Logging in to get token..."
-    fi
+    echo "Logging in to get auth token..."
 
     # Get MD5 hash of password (using openssl on macOS)
     PASSWORD_HASH=$(echo -n "$FRANKLIN_PASSWORD" | openssl md5 | cut -d' ' -f2)
@@ -389,14 +385,14 @@ franklin_set_soc_command() {
 
   BASE_URL="https://energy.franklinwh.com/hes-gateway/terminal"
 
-    echo "Logging in to get token..."
+  echo "Setting ${MODE_NAME} mode with ${SOC}% SOC..."
+
+  TOKEN=$(get_token)
   if [ -z "$TOKEN" ]; then
       exit 1
   fi
 
-  echo "Setting ${MODE_NAME} mode with ${SOC}% SOC..."
-
-  # Set self-consumption mode with specified SOC
+  # Set battery mode with specified SOC
   if [ "$DEBUG" = "true" ]; then
       echo "DEBUG: Setting SOC URL: $BASE_URL/tou/updateTouMode"
       echo "DEBUG: Gateway ID: $FRANKLIN_GATEWAY_ID"

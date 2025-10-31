@@ -32,14 +32,14 @@ fi
 
 BASE_URL="https://energy.franklinwh.com/hes-gateway/terminal"
 
-  echo "Logging in to get token..."
+echo "Setting ${MODE_NAME} mode with ${SOC}% SOC..."
+
+TOKEN=$(get_token)
 if [ -z "$TOKEN" ]; then
     exit 1
 fi
 
-echo "Setting ${MODE_NAME} mode with ${SOC}% SOC..."
-
-# Set self-consumption mode with specified SOC
+# Set battery mode with specified SOC
 if [ "$DEBUG" = "true" ]; then
     echo "DEBUG: Setting SOC URL: $BASE_URL/tou/updateTouMode"
     echo "DEBUG: Gateway ID: $FRANKLIN_GATEWAY_ID"

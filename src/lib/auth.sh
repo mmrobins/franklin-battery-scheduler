@@ -3,9 +3,7 @@ function get_token() {
     if [ -f ".env" ]; then
         source .env
         if [ -n "$FRANKLIN_TOKEN" ]; then
-            if [ "$DEBUG" = "true" ]; then
-                echo "DEBUG: Using cached token from .env file." >&2
-            fi
+            echo "Using cached token auth token from .env file." >&2
             echo "$FRANKLIN_TOKEN"
             return
         fi
@@ -13,9 +11,7 @@ function get_token() {
 
     BASE_URL="https://energy.franklinwh.com/hes-gateway/terminal"
 
-    if [ "$DEBUG" = "true" ]; then
-        echo "DEBUG: Logging in to get token..."
-    fi
+    echo "Logging in to get auth token..."
 
     # Get MD5 hash of password (using openssl on macOS)
     PASSWORD_HASH=$(echo -n "$FRANKLIN_PASSWORD" | openssl md5 | cut -d' ' -f2)
