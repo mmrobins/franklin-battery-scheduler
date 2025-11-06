@@ -200,7 +200,7 @@ GitLab CI is similar to GitHub Actions, but has some advantages, the biggest
 one being running cron jobs closer to the time declared
 
 1. **Better reliability** - GitLab's scheduled pipelines run [within 5-10 minutes of the scheduled time](./bin/gitlab_check_cron_drift.sh)
-2. **Native timezone support** - You can set the timezone for each schedule
+2. **Native timezone support** - You can set the timezone for each schedule, and it appears to work correctly with daylight savings time
 3. **Per-schedule variables** - each schedule can have different SOC targets
 4. **Free tier** - GitLab provides 400 minutes/month of CI/CD for free
 
@@ -248,6 +248,15 @@ other reverse-engineering efforts I've found on GitHub
 
 I don't know except manually adjust the cron jobs when it happens, but if you
 think of something better, please open an issue or PR!
+
+I *think* gitlab's scheduled pipelines DO handle timezone and daylight savings
+time.  It just happened (Nov switch from PDT -> PST), and it seemed to run my
+cron jobs at the right time after the switch without any changes on my part.
+The UI and documentation just [don't seem to mention
+this](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/37165)
+
+AFAIK github actions does NOT handle timezone or daylight savings time, but I
+didn't have it running when the switch happened, so I can't confirm.
 
 ### Can I run this without internet directly connected to the franklin AP wifi point?
 
